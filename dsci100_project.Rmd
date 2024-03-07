@@ -1,0 +1,43 @@
+```{r}
+library(tidyverse)
+library(readr)
+library(tidymodels)
+```
+```{r}
+heart_data <- read_table("data/cleve.mod", skip = 20, col_names = c("age", "sex", "cp", "trestbps", "chol", "fbs", "restecg", "thalach", "exang", "oldpeak", "slope", "ca", "thal", "num"))
+head(heart_data)
+
+```
+```{r}
+set.seed(8888)
+# split data into training and testing data
+heart_split <- initial_split(heart_data, prop = 0.75, strata = num)
+heart_train <- training(heart_split)
+heart_test <- testing(heart_split)
+```
+```{r}
+#compare chol level between sick or not
+chol_boxplot <- heart_train |>
+  ggplot(aes(x = num, y = chol, fill = num)) +
+  geom_boxplot() +
+  labs(title = "Serum Cholesterol Levels",
+       x = "Sick or Healthy",
+       y = "Serum Cholesterol Level",
+       fill = "Sick or Healthy") +
+  theme(aspect.ratio = 1.8)
+chol_boxplot
+
+```
+```{r}
+# significant or not?
+#The two box-plots overlap, perhaps chol level is not statistical significant in determine heart disease
+#or use t-test
+chol_t_test <- t.test(chol ~ num, data = heart_train)
+chol_t_test
+#assuming we are using 0.05 as our significant level
+#0.05 < 0.686
+#indicate Serum Cholesterol Level is not statistical significant in determine heart disease
+
+```
+
+
